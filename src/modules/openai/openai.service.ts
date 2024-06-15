@@ -1,5 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { OpenAI } from 'openai';
+import {
+  getCurrentWeather,
+  getCurrentWeatherDefinition,
+} from 'src/model/tools';
 
 @Injectable()
 export class OpenAiService {
@@ -9,30 +13,6 @@ export class OpenAiService {
     this.openai = new OpenAI({
       apiKey: process.env.OPENAI_API_KEY,
     });
-  }
-
-  private getCurrentWeather(location: string, unit: string = 'fahrenheit') {
-    if (location.toLowerCase().includes('tokyo')) {
-      return JSON.stringify({
-        location: 'Tokyo',
-        temperature: '10',
-        unit,
-      });
-    } else if (location.toLowerCase().includes('san francisco')) {
-      return JSON.stringify({
-        location: 'San Francisco',
-        temperature: '72',
-        unit,
-      });
-    } else if (location.toLowerCase().includes('paris')) {
-      return JSON.stringify({
-        location: 'Paris',
-        temperature: '22',
-        unit,
-      });
-    } else {
-      return JSON.stringify({ location, temperature: 'unknown' });
-    }
   }
 
   async chat(
@@ -47,26 +27,7 @@ export class OpenAiService {
   ): Promise<string> {
     conversationHistory.push({ role: 'user', content: message });
 
-    const tools = [
-      {
-        type: 'function',
-        function: {
-          name: 'get_current_weather',
-          description: 'Get the current weather in a given location',
-          parameters: {
-            type: 'object',
-            properties: {
-              location: {
-                type: 'string',
-                description: 'The city and state, e.g., San Francisco, CA',
-              },
-              unit: { type: 'string', enum: ['celsius', 'fahrenheit'] },
-            },
-            required: ['location'],
-          },
-        },
-      },
-    ];
+    const tools = [getCurrentWeatherDefinition];
 
     let response = await this.openai.chat.completions.create({
       model: 'gpt-3.5-turbo',
@@ -90,10 +51,7 @@ export class OpenAiService {
       for (const toolCall of toolCalls) {
         if (toolCall.function.name === 'get_current_weather') {
           const args = JSON.parse(toolCall.function.arguments);
-          const weatherResult = this.getCurrentWeather(
-            args.location,
-            args.unit,
-          );
+          const weatherResult = getCurrentWeather(args.location, args.unit);
           console.log('toolCall', toolCall, weatherResult);
 
           conversationHistory.push({
