@@ -1,8 +1,8 @@
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { OpenaiModule } from './openai/openai.module';
-import { ChatController } from './chat/chat.controller';
+import { OpenaiModule } from './modules/openai/openai.module';
+import { ChatController } from './modules/chat/chat.controller';
 import { ConfigModule } from '@nestjs/config';
 
 @Module({
