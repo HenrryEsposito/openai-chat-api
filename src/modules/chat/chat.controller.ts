@@ -1,9 +1,9 @@
 import { Controller, Post, Body, HttpCode, HttpStatus } from '@nestjs/common';
-import { OpenAiService } from '../openai/openai.service';
+import { ConversationService } from '../conversation/conversation.service';
 
 @Controller('chat')
 export class ChatController {
-  constructor(private readonly openAiService: OpenAiService) {}
+  constructor(private readonly conversationService: ConversationService) {}
 
   @Post()
   @HttpCode(HttpStatus.OK)
@@ -12,7 +12,7 @@ export class ChatController {
     @Body('conversationHistory')
     conversationHistory: Array<{ role: string; content: string }>,
   ) {
-    const response = await this.openAiService.chat(
+    const response = await this.conversationService.chat(
       message,
       conversationHistory,
     );

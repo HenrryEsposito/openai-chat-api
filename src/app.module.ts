@@ -1,11 +1,11 @@
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { OpenaiModule } from './modules/openai/openai.module';
 import { ChatController } from './modules/chat/chat.controller';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 import { AirportsModule } from './modules/airport/airport.module';
+import { ChatModule } from './modules/chat/chat.module';
 
 @Module({
   imports: [
@@ -19,7 +19,7 @@ import { AirportsModule } from './modules/airport/airport.module';
       }),
       inject: [ConfigService],
     }),
-    OpenaiModule,
+    ChatModule,
     AirportsModule,
   ],
   controllers: [AppController, ChatController],

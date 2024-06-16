@@ -53,7 +53,7 @@ export const findTravelTicketsDefinition = {
   function: {
     name: 'find_travel_tickets',
     description:
-      'Find travel tickets based on departure and arrival locations.',
+      'This function finds travel tickets based on departure and arrival locations. This function needs the codes for the departure and arrival airports, if you dont have them yet, use the gether_info_before_find_travel_tickets_data_for_execution function to get them',
     parameters: {
       type: 'object',
       properties: {
@@ -101,7 +101,7 @@ export const gatherInfoBeforeFindTravelTicketsDataForExecutionDefinition = {
   function: {
     name: 'gether_info_before_find_travel_tickets_data_for_execution',
     description:
-      'gathers all necessary information and confirms with the user before executing the function find_travel_tickets.',
+      'This function gathers all necessary information and confirms with the user before executing the function find_travel_tickets. This function helps to obtain airport codes if the user does not know.',
     parameters: {
       type: 'object',
       properties: {
