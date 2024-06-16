@@ -1,49 +1,3 @@
-export const getCurrentWeatherDefinition = {
-  type: 'function',
-  function: {
-    name: 'get_current_weather',
-    description: 'Get the current weather in a given location',
-    parameters: {
-      type: 'object',
-      properties: {
-        location: {
-          type: 'string',
-          description: 'The city and state, e.g., San Francisco, CA',
-        },
-        unit: { type: 'string', enum: ['celsius', 'fahrenheit'] },
-      },
-      required: ['location'],
-    },
-  },
-};
-
-export function getCurrentWeather(
-  location: string,
-  unit: string = 'fahrenheit',
-) {
-  if (location.toLowerCase().includes('tokyo')) {
-    return JSON.stringify({
-      location: 'Tokyo',
-      temperature: '10',
-      unit,
-    });
-  } else if (location.toLowerCase().includes('san francisco')) {
-    return JSON.stringify({
-      location: 'San Francisco',
-      temperature: '72',
-      unit,
-    });
-  } else if (location.toLowerCase().includes('paris')) {
-    return JSON.stringify({
-      location: 'Paris',
-      temperature: '22',
-      unit,
-    });
-  } else {
-    return JSON.stringify({ location, temperature: 'unknown' });
-  }
-}
-
 export const flightSearchToolDefinition = {
   type: 'function',
   function: {
@@ -90,6 +44,93 @@ export const flightSearchToolDefinition = {
         },
       },
       required: ['departure_id', 'arrival_id', 'outbound_date'],
+    },
+  },
+};
+
+export const findTravelTicketsDefinition = {
+  type: 'function',
+  function: {
+    name: 'find_travel_tickets',
+    description:
+      'Find travel tickets based on departure and arrival locations.',
+    parameters: {
+      type: 'object',
+      properties: {
+        departureAirportCode: {
+          type: 'string',
+          description: 'The departure airport code, made of 3 letters.',
+        },
+        arrivalAirportCode: {
+          type: 'string',
+          description: 'The arrival airport code, made of 3 letters.',
+        },
+      },
+      required: ['departureAirportCode', 'arrivalAirportCode'],
+    },
+  },
+};
+
+export function findTravelTickets(
+  departureAirportCode: string,
+  arrivalAirportCode: string,
+) {
+  if (departureAirportCode.toLowerCase() === 'sfo') {
+    return JSON.stringify({
+      departureAirportCode: 'SFO',
+      arrivalAirportCode: 'JFK',
+      price: '$200',
+    });
+  } else if (departureAirportCode.toLowerCase() === 'jfk') {
+    return JSON.stringify({
+      departureAirportCode: 'JFK',
+      arrivalAirportCode: 'SFO',
+      price: '$250',
+    });
+  } else {
+    return JSON.stringify({
+      departureAirportCode,
+      arrivalAirportCode,
+      price: 'unknown',
+    });
+  }
+}
+
+export const gatherInfoBeforeFindTravelTicketsDataForExecutionDefinition = {
+  type: 'function',
+  function: {
+    name: 'gether_info_before_find_travel_tickets_data_for_execution',
+    description:
+      'gathers all necessary information and confirms with the user before executing the function find_travel_tickets.',
+    parameters: {
+      type: 'object',
+      properties: {
+        departureCityName: {
+          type: 'string',
+          description: 'The departure city name.',
+        },
+        arrivalCityName: {
+          type: 'string',
+          description: 'The arrival city name.',
+        },
+        departureAirportCode: {
+          type: 'string',
+          description: 'The departure airport code, made of 3 letters.',
+        },
+        arrivalAirportCode: {
+          type: 'string',
+          description: 'The arrival airport code, made of 3 letters.',
+        },
+        departureAirportName: {
+          type: 'string',
+          description: 'The departure airport name.',
+        },
+        arrivalAirportName: {
+          type: 'string',
+          description: 'The arrival airport name.',
+        },
+      },
+      required: [],
     },
   },
 };
