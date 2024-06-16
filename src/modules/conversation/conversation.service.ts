@@ -43,23 +43,27 @@ export class ConversationService {
     message: string,
     conversationHistory: Array<ConversationItem>,
   ): Promise<Array<ConversationItem>> {
-    if (conversationHistory.length === 0) {
-      conversationHistory.push({
-        role: 'system',
-        content: initialSystemPrompt,
-      });
-    }
-
-    conversationHistory.push({ role: 'user', content: message });
-
-    await this.generateGPTResponse(conversationHistory, true);
-
-    const lastEntry = conversationHistory[conversationHistory.length - 1];
-
-    if (lastEntry.tool_calls && lastEntry.tool_calls.length > 0) {
-      for (const toolCall of lastEntry.tool_calls) {
-        await this.toolsService.handleToolCall(toolCall, conversationHistory);
+    try {
+      if (conversationHistory.length === 0) {
+        conversationHistory.push({
+          role: 'system',
+          content: initialSystemPrompt,
+        });
       }
+
+      conversationHistory.push({ role: 'user', content: message });
+
+      await this.generateGPTResponse(conversationHistory, true);
+
+      const lastEntry = conversationHistory[conversationHistory.length - 1];
+
+      if (lastEntry.tool_calls && lastEntry.tool_calls.length > 0) {
+        for (const toolCall of lastEntry.tool_calls) {
+          await this.toolsService.handleToolCall(toolCall, conversationHistory);
+        }
+      }
+    } catch (error) {
+      console.error('_____________', error);
     }
 
     return conversationHistory;
