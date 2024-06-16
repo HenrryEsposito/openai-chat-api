@@ -4,6 +4,7 @@ import { ConversationService } from '../conversation/conversation.service';
 import { ToolsService } from '../tools/tools.service';
 import { AirportsModule } from '../airport/airport.module';
 import { SerpApiService } from '../serpApi/serp-api.service';
+import { FlightDataParsingService } from '../flightDataParsing/flight-data-parsing.service';
 
 @Module({
   imports: [AirportsModule],
@@ -13,6 +14,7 @@ import { SerpApiService } from '../serpApi/serp-api.service';
     ToolsService,
     AirportsModule,
     SerpApiService,
+    FlightDataParsingService,
   ],
   exports: [ConversationService],
 })
