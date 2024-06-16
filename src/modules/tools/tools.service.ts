@@ -5,12 +5,14 @@ import {
 } from 'src/model/tools';
 import { AirportsService } from '../airport/airports.service';
 import { OpenAiService } from '../openai/openai.service';
+import { SerpApiService } from '../serpApi/serp-api.service';
 
 @Injectable()
 export class ToolsService {
   constructor(
     private readonly airportsService: AirportsService,
     private readonly openAiService: OpenAiService,
+    private readonly serpApiService: SerpApiService,
   ) {}
 
   getToolsDefinitions() {
@@ -100,6 +102,21 @@ export class ToolsService {
         'find_travel_tickets',
         JSON.parse(toolCall.function.arguments),
       );
+      const flightsData = await this.serpApiService.getFlights(
+        JSON.parse(toolCall.function.arguments),
+      );
+
+      conversationHistory.push({
+        tool_call_id: toolCall.id,
+        role: 'tool',
+        name: toolCall.function.name,
+        content: `
+        Below are all the flight data interesting to the user, you must display it in an organized way for the user, as well as the links so that he can navigate to the source of the flight information
+         ${flightsData}
+         `,
+      });
+
+      await this.generateGPTResponse(conversationHistory);
     }
   }
 }

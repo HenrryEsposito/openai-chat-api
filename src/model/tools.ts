@@ -1,18 +1,19 @@
-export const flightSearchToolDefinition = {
+export const findTravelTicketsDefinition = {
   type: 'function',
   function: {
-    name: 'search_flights',
-    description: 'Fetch flight results from Google Flights.',
+    name: 'find_travel_tickets',
+    description:
+      'This function finds travel tickets based on departure and arrival locations. This function needs the codes for the departure and arrival airports, if you dont have them yet, use the gether_info_before_find_travel_tickets_data_for_execution function to get them',
     parameters: {
       type: 'object',
       properties: {
         departure_id: {
           type: 'string',
-          description: 'The airport or location kgmid of departure.',
+          description: 'The airport code of departure.',
         },
         arrival_id: {
           type: 'string',
-          description: 'The airport or location kgmid of arrival.',
+          description: 'The airport code of arrival.',
         },
         outbound_date: {
           type: 'string',
@@ -47,54 +48,6 @@ export const flightSearchToolDefinition = {
     },
   },
 };
-
-export const findTravelTicketsDefinition = {
-  type: 'function',
-  function: {
-    name: 'find_travel_tickets',
-    description:
-      'This function finds travel tickets based on departure and arrival locations. This function needs the codes for the departure and arrival airports, if you dont have them yet, use the gether_info_before_find_travel_tickets_data_for_execution function to get them',
-    parameters: {
-      type: 'object',
-      properties: {
-        departureAirportCode: {
-          type: 'string',
-          description: 'The departure airport code, made of 3 letters.',
-        },
-        arrivalAirportCode: {
-          type: 'string',
-          description: 'The arrival airport code, made of 3 letters.',
-        },
-      },
-      required: ['departureAirportCode', 'arrivalAirportCode'],
-    },
-  },
-};
-
-export function findTravelTickets(
-  departureAirportCode: string,
-  arrivalAirportCode: string,
-) {
-  if (departureAirportCode.toLowerCase() === 'sfo') {
-    return JSON.stringify({
-      departureAirportCode: 'SFO',
-      arrivalAirportCode: 'JFK',
-      price: '$200',
-    });
-  } else if (departureAirportCode.toLowerCase() === 'jfk') {
-    return JSON.stringify({
-      departureAirportCode: 'JFK',
-      arrivalAirportCode: 'SFO',
-      price: '$250',
-    });
-  } else {
-    return JSON.stringify({
-      departureAirportCode,
-      arrivalAirportCode,
-      price: 'unknown',
-    });
-  }
-}
 
 export const gatherInfoBeforeFindTravelTicketsDataForExecutionDefinition = {
   type: 'function',

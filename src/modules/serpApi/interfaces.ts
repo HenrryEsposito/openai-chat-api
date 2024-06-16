@@ -1,0 +1,32 @@
+export interface SerpApiParams {
+  departure_id: string;
+  arrival_id: string;
+  outbound_date: string;
+  return_date?: string;
+  currency?: string;
+  hl?: string;
+  gl?: string;
+  type?: number;
+  travel_class?: number;
+  show_hidden?: boolean;
+  adults?: number;
+  children?: number;
+  infants_in_seat?: number;
+  infants_on_lap?: number;
+  stops?: number;
+  exclude_airlines?: string;
+  include_airlines?: string;
+  bags?: number;
+  max_price?: number;
+  outbound_times?: string;
+  return_times?: string;
+  emissions?: number;
+  layover_duration?: string;
+  exclude_conns?: string;
+  max_duration?: number;
+  departure_token?: string;
+  booking_token?: string;
+  no_cache?: boolean;
+  async?: boolean;
+  output?: string;
+}
