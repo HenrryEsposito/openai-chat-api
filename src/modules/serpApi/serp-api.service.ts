@@ -17,7 +17,7 @@ export class SerpApiService {
         ...queryParams,
         engine: 'google_flights',
         api_key: this.apiKey,
-        type: 2,
+        type: queryParams.return_date ? 1 : 2,
       });
 
       // console.log(JSON.stringify(results, null, 2));
