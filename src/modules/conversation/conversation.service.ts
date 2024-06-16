@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { OpenAiService } from '../openai/openai.service';
 import { ToolsService } from '../tools/tools.service';
 import { initialSystemPrompt } from 'src/model/reinforcementPrompts';
+import { ConversationItem } from './interfaces';
 
 @Injectable()
 export class ConversationService {
@@ -10,54 +11,7 @@ export class ConversationService {
     private readonly toolsService: ToolsService,
   ) {}
 
-  async chat(
-    message: string,
-    conversationHistory: Array<{
-      role: string;
-      content: string;
-      tool_call_id?: string;
-      name?: string;
-      tool_calls?: Array<{ id: string; function: { name: string } }>;
-    }>,
-  ): Promise<string> {
-    if (conversationHistory.length === 0) {
-      conversationHistory.push({
-        role: 'system',
-        content: initialSystemPrompt,
-      });
-    }
-
-    conversationHistory.push({ role: 'user', content: message });
-
-    let response = await this.generateGPTResponse(conversationHistory, true);
-
-    const toolCalls = response.choices[0].message.tool_calls;
-
-    if (toolCalls && toolCalls.length > 0) {
-      conversationHistory.push({
-        role: 'assistant',
-        name: response.choices[0].message.tool_name,
-        content: response.choices[0].message.content,
-        tool_calls: response.choices[0].message.tool_calls,
-      });
-
-      for (const toolCall of toolCalls) {
-        response = await this.toolsService.handleToolCall(
-          toolCall,
-          conversationHistory,
-        );
-      }
-    } else {
-      conversationHistory.push({
-        role: 'assistant',
-        content: response.choices[0].message.content,
-      });
-    }
-
-    return response.choices[0].message.content;
-  }
-
-  private generateGPTResponse(
+  private async generateGPTResponse(
     conversationHistory: any,
     giveTools = false,
   ): Promise<any> {
@@ -77,6 +31,37 @@ export class ConversationService {
       };
     }
 
-    return this.openAiService.createChatCompletion(baseConfig);
+    const response = await this.openAiService.createChatCompletion(baseConfig);
+
+    conversationHistory.push({
+      role: 'assistant',
+      ...response.choices[0].message,
+    });
+  }
+
+  async chat(
+    message: string,
+    conversationHistory: Array<ConversationItem>,
+  ): Promise<Array<ConversationItem>> {
+    if (conversationHistory.length === 0) {
+      conversationHistory.push({
+        role: 'system',
+        content: initialSystemPrompt,
+      });
+    }
+
+    conversationHistory.push({ role: 'user', content: message });
+
+    await this.generateGPTResponse(conversationHistory, true);
+
+    const lastEntry = conversationHistory[conversationHistory.length - 1];
+
+    if (lastEntry.tool_calls && lastEntry.tool_calls.length > 0) {
+      for (const toolCall of lastEntry.tool_calls) {
+        await this.toolsService.handleToolCall(toolCall, conversationHistory);
+      }
+    }
+
+    return conversationHistory;
   }
 }

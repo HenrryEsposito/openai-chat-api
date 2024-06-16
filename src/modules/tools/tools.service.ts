@@ -20,7 +20,21 @@ export class ToolsService {
     ];
   }
 
-  async handleToolCall(toolCall: any, conversationHistory: any): Promise<any> {
+  private async generateGPTResponse(conversationHistory: any) {
+    const response = await this.openAiService.createChatCompletion({
+      model: 'gpt-4o',
+      max_tokens: 150,
+      temperature: 0.8,
+      messages: conversationHistory,
+    });
+
+    conversationHistory.push({
+      role: 'assistant',
+      ...response.choices[0].message,
+    });
+  }
+
+  async handleToolCall(toolCall: any, conversationHistory: any) {
     if (
       toolCall.function.name ===
       'gether_info_before_find_travel_tickets_data_for_execution'
@@ -80,21 +94,12 @@ export class ToolsService {
         `,
       });
 
-      return this.generateGPTResponse(conversationHistory);
+      await this.generateGPTResponse(conversationHistory);
     } else if (toolCall.function.name === 'find_travel_tickets') {
       console.log(
         'find_travel_tickets',
         JSON.parse(toolCall.function.arguments),
       );
     }
-  }
-
-  private generateGPTResponse(conversationHistory: any): Promise<any> {
-    return this.openAiService.createChatCompletion({
-      model: 'gpt-4o',
-      max_tokens: 150,
-      temperature: 0.8,
-      messages: conversationHistory,
-    });
   }
 }
