@@ -1,24 +1,31 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { SerpApiData } from './interfaces';
 
 @Injectable()
 export class FlightDataParsingService {
   generateFlightHtml(flightsData: SerpApiData): string {
-    let flightsHtml = '';
+    try {
+      let flightsHtml = '';
 
-    if (flightsData.best_flights && flightsData.best_flights.length) {
-      flightsHtml = this.generateFlightsHtml(flightsData.best_flights);
-    } else if (flightsData.other_flights && flightsData.other_flights.length) {
-      flightsHtml = this.generateFlightsHtml(flightsData.other_flights);
-    } else {
-      flightsHtml = `
-        <div class="no-flights">
-          <h2>Não foram encontrados voos</h2>
-        </div>
-        `;
+      if (flightsData.best_flights && flightsData.best_flights.length) {
+        flightsHtml = this.generateFlightsHtml(flightsData.best_flights);
+      } else if (
+        flightsData.other_flights &&
+        flightsData.other_flights.length
+      ) {
+        flightsHtml = this.generateFlightsHtml(flightsData.other_flights);
+      } else {
+        flightsHtml = `
+          <div class="no-flights">
+            <h2>Não foram encontrados voos</h2>
+          </div>
+          `;
+      }
+
+      return flightsHtml;
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR);
     }
-
-    return flightsHtml;
   }
 
   private generateFlightsHtml(flightGroups): string {

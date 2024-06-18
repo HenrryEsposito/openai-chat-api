@@ -1,4 +1,11 @@
-import { Controller, Post, Body, HttpCode, HttpStatus } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Body,
+  HttpCode,
+  HttpStatus,
+  HttpException,
+} from '@nestjs/common';
 import { ConversationService } from '../conversation/conversation.service';
 
 @Controller('chat')
@@ -12,10 +19,14 @@ export class ChatController {
     @Body('conversationHistory')
     conversationHistory: Array<{ role: string; content: string }>,
   ) {
-    const response = await this.conversationService.chat(
-      message,
-      conversationHistory,
-    );
-    return { response };
+    try {
+      const response = await this.conversationService.chat(
+        message,
+        conversationHistory,
+      );
+      return { response };
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
   }
 }

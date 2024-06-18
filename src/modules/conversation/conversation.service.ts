@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { OpenAiService } from '../openai/openai.service';
 import { ToolsService } from '../tools/tools.service';
 import { initialSystemPrompt } from 'src/model/reinforcementPrompts';
@@ -64,6 +64,7 @@ export class ConversationService {
       }
     } catch (error) {
       console.error('_____________', error);
+      throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     return conversationHistory;
