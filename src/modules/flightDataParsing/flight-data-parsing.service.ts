@@ -4,7 +4,25 @@ import { SerpApiData } from './interfaces';
 @Injectable()
 export class FlightDataParsingService {
   generateFlightHtml(flightsData: SerpApiData): string {
-    const flightsHtml = flightsData.best_flights
+    let flightsHtml = '';
+
+    if (flightsData.best_flights && flightsData.best_flights.length) {
+      flightsHtml = this.generateFlightsHtml(flightsData.best_flights);
+    } else if (flightsData.other_flights && flightsData.other_flights.length) {
+      flightsHtml = this.generateFlightsHtml(flightsData.other_flights);
+    } else {
+      flightsHtml = `
+        <div class="no-flights">
+          <h2>Não foram encontrados voos</h2>
+        </div>
+        `;
+    }
+
+    return flightsHtml;
+  }
+
+  private generateFlightsHtml(flightGroups): string {
+    return flightGroups
       .map((flightGroup) => {
         return flightGroup.flights
           .map((flight) => {
@@ -31,7 +49,5 @@ export class FlightDataParsingService {
           .join('');
       })
       .join('');
-
-    return flightsHtml;
   }
 }
